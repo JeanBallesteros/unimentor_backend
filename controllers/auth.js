@@ -49,6 +49,11 @@ const register = async (req, res) => {
     try {
         const {documentNumber, name, lastname, email, current_password } = req.body;
 
+        // Validar que el email no esté vacío y sea un email válido
+        if (!email || !email.includes('@autonoma.edu.co')) {
+            return res.status(400).json({ error: "El email no es válido" });
+        }
+
         // Validar que la contraseña no esté vacía y cumpla con ciertos criterios
         if (!current_password || current_password.length < 8) {
             return res.status(400).json({ error: "La contraseña no cumple con los requisitos mínimos" });
