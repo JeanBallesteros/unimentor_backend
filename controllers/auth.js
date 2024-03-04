@@ -47,7 +47,7 @@ const login = async (req, res) => {
 
 const register = async (req, res) => {
     try {
-        const {documentNumber, name, lastname, email, current_password } = req.body;
+        const {documentNumber, fullname, email, current_password } = req.body;
 
         // Validar que el email no esté vacío y sea un email válido
         if (!email || !email.includes('@autonoma.edu.co')) {
@@ -66,8 +66,10 @@ const register = async (req, res) => {
         const token = crypto.randomBytes(64).toString('hex');
 
         // Crear un nuevo usuario con la contraseña hasheada
-        const user = new modelUser({ documentNumber, name, lastname, email, current_password: hashedPassword, token });
+        const user = new modelUser({ documentNumber, fullname, email, current_password: hashedPassword, token });
         await user.save();
+
+        res.status(200).json({ msg: "Usuario creado correctamente"});
 
     } catch (error) {
         // Manejar errores y responder con un estado HTTP 500 (Internal Server Error) en caso de un error interno

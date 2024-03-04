@@ -2,7 +2,6 @@ const express = require('express');
 const modelUser = require('../models/user');
 const fetch = require('node-fetch');
 
-// Obtener todos los movies
 const getAllUsers = async (req, res)=>{
     try{
         const users = await modelUser.find();
@@ -12,4 +11,4 @@ const getAllUsers = async (req, res)=>{
     }
 };
 
-module.exports = {getAllUsers/*, updateUser , editUser */};
+module.exports = {getAllUsers};
