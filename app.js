@@ -11,7 +11,10 @@ const path = require('path');
 
 const cors = require("cors")
 
-app.use(cors());
+app.use(cors({
+    origin: 'http://localhost:5173',
+    credentials: true
+}));
 
 // Visualización del contenido del endpoint o envío del contenido
 app.use(bodyParser.urlencoded({ extended: true }))
