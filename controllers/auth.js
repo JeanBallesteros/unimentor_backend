@@ -10,39 +10,46 @@ require("dotenv").config()
 
 const login = async (req, res) => {
     const { email, current_password } = req.body;
-    console.log(req.body);
-    try {
-        if (!email || !current_password) {
-            throw new Error("El email y la contraseña son obligatorios");
-            console.log("no recibe datos");
-        }
-        const emailLowerCase = email.toLowerCase();
-        const userStore = await modelUser.findOne({ email: emailLowerCase }).exec();
-        if (!userStore) {
-            throw new Error("El usuario no existe");
-        }
-        const check = await bcrypt.compare(
-            current_password,
-            userStore.current_password
-        );
-        if (!check) {
-            throw new Error("Contraseña incorrecta");
-        }
-        // if (!userStore.active) {
-        //     throw new Error("Usuario no autorizado o no activo");
-        // }
 
-        // Genera tokens de acceso y refresh
-        const accessToken = jwt.sign({ userStore }, process.env.JWT_SECRET_KEY, { expiresIn: '5m' });
-        const refreshToken = jwt.sign({ userStore }, process.env.JWT_SECRET_KEY, { expiresIn: '5m' });
-
-        res.status(200).send({
-            accessToken, refreshToken
-        });
-    } catch (error) {
-        res.status(400).send({ msg: error.message });
-        console.log();
+    if (!email || !current_password) {
+        return res
+        .status(400)
+        .json({ error: "Email y contraseña son requeridos" });
     }
+
+    const user = await modelUser.findOne({
+        email: email
+    });
+
+    console.log("Usuario: " + user);
+
+    if (!user) {
+        return res
+        .status(404)
+        .json({ error: "Usuario no encontrado" });
+        console.log("Usuario no encontrado");
+    }
+
+    const validPassword = await bcrypt.compare(current_password, user.current_password);
+
+    if (!validPassword) {
+        return res
+        .status(400)
+        .json({ error: "Contraseña incorrecta" });
+        console.log("Contraseña incorrecta");
+    }
+
+    const accessToken = createAccessToken({ id: user.id }); 
+    const refreshToken = createRefreshToken({ id: user.id });
+
+    if (!accessToken || !refreshToken) {
+        return res.status(500).json({ error: "Error al generar el token" });
+    }
+
+    res.status(200)
+    .json({ message: "Bienvenido", accessToken, refreshToken });
+    console.log("Bienvenido " + user.fullname);
+    
 };
 
 const register = async (req, res) => {

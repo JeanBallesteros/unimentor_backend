@@ -13,19 +13,21 @@ const cors = require("cors")
 
 app.use(cors());
 
-//Visualizacion del contenido del endpoint o envio del contenido
-app.use(bodyParser.urlencoded({ extended: false }))
+// Visualización del contenido del endpoint o envío del contenido
+app.use(bodyParser.urlencoded({ extended: true }))
 app.use(bodyParser.json())
 
+// USERS
+app.use(`/${process.env.API_PATH}/users`, userRoutes);
 
-//USERS
-app.use(`/${process.env.API_PATH}/users`,userRoutes);
+app.use(`/${process.env.API_PATH}/auth`, authRoutes);
 
-app.use(`/${process.env.API_PATH}/auth`,authRoutes);
-
+// Configuración de cabeceras CORS para permitir métodos HTTP
 app.use((req, res, next) => {
     res.setHeader("Access-Control-Allow-Origin", "*");
-    res.setHeader("Access-Control-Allow-Method")
-})
+    res.setHeader("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE");
+    res.setHeader("Access-Control-Allow-Headers", "Content-Type, Authorization");
+    next();
+});
 
 module.exports = app
