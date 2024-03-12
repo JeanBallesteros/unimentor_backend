@@ -13,7 +13,8 @@ const cors = require("cors")
 
 app.use(cors({
     origin: 'http://localhost:5173',
-    credentials: true
+    credentials: true,
+    optionSuccessStatus:200
 }));
 
 // Visualización del contenido del endpoint o envío del contenido
