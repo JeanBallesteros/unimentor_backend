@@ -1,6 +1,7 @@
 const express = require('express');
 const modelUser = require('../models/user');
 const fetch = require('node-fetch');
+const multer = require('multer');
 
 const getAllUsers = async (req, res)=>{
     try{

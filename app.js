@@ -4,6 +4,7 @@ const bodyParser = require("body-parser")
 
 const userRoutes = require("./routes/user")
 const authRoutes = require("./routes/auth")
+const avalRoutes = require("./routes/aval")
 
 const dotenv = require('dotenv').config()
 
@@ -25,6 +26,8 @@ app.use(bodyParser.json())
 app.use(`/${process.env.API_PATH}/users`, userRoutes);
 
 app.use(`/${process.env.API_PATH}/auth`, authRoutes);
+
+app.use(`/${process.env.API_PATH}/avales`, avalRoutes);
 
 // Configuración de cabeceras CORS para permitir métodos HTTP
 // app.use((req, res, next) => {
