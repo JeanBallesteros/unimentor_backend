@@ -29,6 +29,8 @@ app.use(`/${process.env.API_PATH}/auth`, authRoutes);
 
 app.use(`/${process.env.API_PATH}/avales`, avalRoutes);
 
+app.use(`/${process.env.API_PATH}/uploads`, express.static('uploads'));
+
 // Configuración de cabeceras CORS para permitir métodos HTTP
 // app.use((req, res, next) => {
 //     res.setHeader("Access-Control-Allow-Origin", "*");

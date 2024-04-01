@@ -25,7 +25,7 @@ const avalUpload = async (req, res) => {
                 if (file.mimetype.startsWith('image/') || file.mimetype.includes('pdf')) {
                     cb(null, true);
                 } else {
-                    cb(new Error('Formato de archivo no válido. Solo se permiten imágenes y videos.'));
+                    cb(new Error('Formato de archivo no válido. Solo se permiten pdf e imágenes.'));
                 }
             },
             limits: {
@@ -34,6 +34,7 @@ const avalUpload = async (req, res) => {
                 parts: 6
             }
         }).array('files', 3);
+
   
         await new Promise((resolve, reject) => {
             uploadLocalM(req, res, (err) => {
