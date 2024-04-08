@@ -76,4 +76,37 @@ const avalUpload = async (req, res) => {
     }
 };
 
-module.exports = {avalUpload};
+
+const avalUsers = async (req, res)=>{
+    try{
+        // Buscar todos los avales
+        const avales = await modelAval.find();
+        // Obtener los IDs de los usuarios asociados a los avales
+        const avalUserIds = avales.map(aval => aval.idUsuario);
+
+        // Buscar todos los usuarios que no tienen el rol de "master" y cuyo ID está en avalUserIds
+        // const users = await modelUser.find({ role: { $ne: 'master' }, _id: { $in: avalUserIds } });
+
+        // Realizar una operación de agregación para unir datos de avales con usuarios
+        const result = await modelUser.aggregate([
+            // Buscar todos los usuarios que no tienen el rol de "master"
+            { $match: { role: { $ne: 'master' }, _id: { $in: avalUserIds } } },
+            // Unir con la colección "avals" utilizando el campo "userId"
+            {
+                $lookup: {
+                    from: "avals",
+                    localField: "_id",
+                    foreignField: "idUsuario",
+                    as: "avalsData"
+                }
+            },
+        ]);
+
+        res.status(200).json(result);
+    }catch(error){
+        res.status(500).json({message: error.message});
+    }
+};
+
+
+module.exports = {avalUpload, avalUsers};
