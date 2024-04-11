@@ -5,6 +5,8 @@ const bodyParser = require("body-parser")
 const userRoutes = require("./routes/user")
 const authRoutes = require("./routes/auth")
 const avalRoutes = require("./routes/aval")
+const asignaturaRoutes = require("./routes/subject")
+const programaRoutes = require("./routes/program")
 
 const dotenv = require('dotenv').config()
 
@@ -28,6 +30,10 @@ app.use(`/${process.env.API_PATH}/users`, userRoutes);
 app.use(`/${process.env.API_PATH}/auth`, authRoutes);
 
 app.use(`/${process.env.API_PATH}/avales`, avalRoutes);
+
+app.use(`/${process.env.API_PATH}/asignaturas`, asignaturaRoutes);
+
+app.use(`/${process.env.API_PATH}/programas`, programaRoutes);
 
 app.use(`/${process.env.API_PATH}/uploads`, express.static('uploads'));
 
