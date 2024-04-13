@@ -3,8 +3,8 @@ const router = express.Router();
 const userController = require("../controllers/user")
 
 router.get("/", userController.getAllUsers);
+router.patch("/update/:id", userController.updateUser);
 
-// router.post("/aval", userController.avalUpload);
 
 
 
