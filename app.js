@@ -1,5 +1,6 @@
 const express = require("express")
 const app = express()
+const nodemailer = require("nodemailer")
 const bodyParser = require("body-parser")
 
 const userRoutes = require("./routes/user")
@@ -20,6 +21,7 @@ app.use(cors({
     optionSuccessStatus:200
 }));
 
+
 // Visualización del contenido del endpoint o envío del contenido
 app.use(bodyParser.urlencoded({ extended: true }))
 app.use(bodyParser.json())
@@ -37,14 +39,6 @@ app.use(`/${process.env.API_PATH}/programas`, programaRoutes);
 
 app.use(`/${process.env.API_PATH}/uploads`, express.static('uploads'));
 
-// Configuración de cabeceras CORS para permitir métodos HTTP
-// app.use((req, res, next) => {
-//     res.setHeader("Access-Control-Allow-Origin", "*");
-//     res.setHeader("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE");
-//     res.setHeader("Access-Control-Allow-Headers", "Content-Type, Authorization");
-//     next();
-// });
-
 app.use((req, res, next) => {
     res.header("Access-Control-Allow-Origin", "*")
     res.header(
@@ -60,5 +54,67 @@ app.use((req, res, next) => {
     }
     next()
 })
+
+const transporter = nodemailer.createTransport({
+  service: 'gmail',
+  host: 'smtp.gmail.com',
+  auth: {
+      user: process.env.USER_EMAIL,
+      pass: process.env.USER_PASSWORD,
+  }
+});
+
+app.post('/send-email-denied', (req, res) => {
+  const { to, subject, text } = req.body;
+  
+  const mailOptions = {
+      from: {
+          name: 'UniMentor',
+          address: process.env.USER_EMAIL
+      },
+      to: to,
+      subject: subject,
+      text: text
+};
+
+  transporter.sendMail(mailOptions, function(error, info){
+      if (error) {
+          res.status(500).send({
+              message: 'Error al enviar el correo' + error.message
+          });
+      } else {
+          res.status(200).send({
+              message: 'Correo enviado correctamente'
+          });
+      }
+  });
+});
+
+app.post('/send-email-approved', (req, res) => {
+  const { to, subject, text } = req.body;
+  
+  const mailOptions = {
+      from: {
+          name: 'UniMentor',
+          address: process.env.USER_EMAIL
+      },
+      to: to,
+      subject: subject,
+      text: text
+};
+
+  transporter.sendMail(mailOptions, function(error, info){
+      if (error) {
+          res.status(500).send({
+              message: 'Error al enviar el correo' + error.message
+          });
+      } else {
+          res.status(200).send({
+              message: 'Correo enviado correctamente'
+          });
+      }
+  });
+});
+  
 
 module.exports = app
