@@ -6,6 +6,8 @@ router.get("/", subjectController.getAllSubjects);
 
 router.post("/new-subject", subjectController.createSubject);
 
+router.patch("/update/:id", subjectController.updateSubject);
+
 // router.put("/:id/monitor", subjectController.add);
 
 module.exports = router;

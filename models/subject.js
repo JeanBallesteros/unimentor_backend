@@ -2,7 +2,7 @@ const mongoose = require('mongoose')
 const subjectSchema = mongoose.Schema({
     name: { type: String, required: true},
     monitor: {
-        type: mongoose.Schema.Types.ObjectId, 
+        type: String, 
         ref: "Users",
         default: ""
     },

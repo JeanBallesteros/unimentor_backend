@@ -29,9 +29,27 @@ const createSubject = async (req, res)=>{
 
 const getAllSubjects = async (req, res)=>{
     try{
-        const subjects = await modelSubject.find();
+        const subjects = await modelSubject.find({ monitor: "" });
         res.status(200).json(subjects);
     }catch(error){
+        res.status(500).json({message: error.message});
+    }
+};
+
+
+const updateSubject = async (req, res)=>{
+    try{
+        const {id} = req.params;
+        const subject = await modelSubject.findById(id);
+        if(!subject){
+            res.status(404).json({message: 'Subject not found'});
+        } else {
+            subject.monitor = req.body.monitor;
+            await subject.save();
+            res.status(200).json(subject);
+        }
+    }
+    catch(error){
         res.status(500).json({message: error.message});
     }
 };
@@ -45,4 +63,4 @@ const getAllSubjects = async (req, res)=>{
 //     }
 // };
 
-module.exports = {createSubject, getAllSubjects};
+module.exports = {createSubject, getAllSubjects, updateSubject};
