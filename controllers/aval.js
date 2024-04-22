@@ -106,6 +106,29 @@ const avalUsers = async (req, res) => {
   }
 };
 
+
+const avalUsersMonitor = async (req, res) => {
+  try {
+    const avales = await modelAval.find();
+    const avalUserIds = avales.map((aval) => aval.idUsuario);
+    const result = await modelUser.aggregate([
+      { $match: { role: "monitor" } },
+      {
+        $lookup: {
+          from: "avals",
+          localField: "_id",
+          foreignField: "idUsuario",
+          as: "avalsData",
+        },
+      },
+    ]);
+
+    res.status(200).json(result);
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};
+
 const avalDelete = async (req, res) => {
     try {
         const avalId = req.params.id;
@@ -117,4 +140,4 @@ const avalDelete = async (req, res) => {
     }
 };
 
-module.exports = { avalUpload, avalUsers, avalDelete};
+module.exports = { avalUpload, avalUsers, avalDelete, avalUsersMonitor};
