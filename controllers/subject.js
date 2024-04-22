@@ -1,14 +1,15 @@
 const express = require('express');
 const modelUser = require('../models/user');
+const modelGroup = require('../models/group');
 const modelSubject = require('../models/subject');
 const axios = require('axios');
 const fetch = require('node-fetch')
 
 const createSubject = async (req, res)=>{
     try{
-        const {name, teacher} = req.body;
+        const {name} = req.body;
         // console.log(req.body);
-        const newSubject = new modelSubject({name, teacher});
+        const newSubject = new modelSubject({name});
         // console.log(newSubject);
         const savedSubject = await newSubject.save();
 
@@ -29,7 +30,7 @@ const createSubject = async (req, res)=>{
 
 const getAllSubjects = async (req, res)=>{
     try{
-        const subjects = await modelSubject.find({ monitor: "" });
+        const subjects = await modelSubject.find();
         res.status(200).json(subjects);
     }catch(error){
         res.status(500).json({message: error.message});
