@@ -20,6 +20,15 @@ const createGroup = async (req, res)=>{
 }
 
 const getAllGroups = async (req, res) => {
+    try{
+        const groups = await modelGroup.find();
+        res.status(200).json(groups);
+    }catch(error){
+        res.status(500).json({message: error.message});
+    }
+};
+
+const getAllGroupsMonitorEmpty = async (req, res) => {
     try {
         // Utilizamos la agregación para realizar un "inner join" y filtrar por monitor vacío
         const groupsWithSubjectsAndEmptyMonitor = await modelGroup.aggregate([
@@ -47,6 +56,7 @@ const getAllGroups = async (req, res) => {
 };
 
 
+
 const updateGroup = async (req, res)=>{
     try{
         const {id} = req.params;
@@ -68,4 +78,4 @@ const updateGroup = async (req, res)=>{
 
 
 
-module.exports = {createGroup, getAllGroups, updateGroup};
+module.exports = {createGroup, getAllGroups, updateGroup, getAllGroupsMonitorEmpty};

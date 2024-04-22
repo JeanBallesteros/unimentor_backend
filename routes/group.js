@@ -4,6 +4,8 @@ const groupController = require("../controllers/group")
 
 router.get("/", groupController.getAllGroups);
 
+router.get("/monitor", groupController.getAllGroupsMonitorEmpty);
+
 router.post("/new-group", groupController.createGroup);
 
 router.patch("/update/:id", groupController.updateGroup);
