@@ -6,6 +6,8 @@ router.get("/", groupController.getAllGroups);
 
 router.get("/monitor", groupController.getAllGroupsMonitorEmpty);
 
+router.get("/monitornotempty", groupController.getAllGroupsMonitorNotEmpty);
+
 router.post("/new-group", groupController.createGroup);
 
 router.patch("/update/:id", groupController.updateGroup);
