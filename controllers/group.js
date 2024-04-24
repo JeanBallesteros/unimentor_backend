@@ -120,13 +120,24 @@ const updateGroup = async (req, res)=>{
             res.status(200).json(group);
         }
 
-        // modelGroup.updateOne({ _id: group._id }, { $set: { monitor: monitorId } })
-        //     .then(result => {
-        //         console.log('Monitor actualizado:', result);
-        //     })
-        //     .catch(error => {
-        //         console.error('Error al actualizar el monitor:', error);
-        //     });
+    }
+    catch(error){
+        res.status(500).json({message: error.message});
+    }
+};
+
+const updateGroupToNull = async (req, res)=>{
+    try{
+        const {id} = req.params;
+        const group = await modelGroup.findById(id);
+        if(!group){
+            res.status(404).json({message: 'Group not found'});
+        } else {
+
+            group.monitor = null;
+            await group.save();
+            res.status(200).json(group);
+        }
     }
     catch(error){
         res.status(500).json({message: error.message});
@@ -137,4 +148,4 @@ const updateGroup = async (req, res)=>{
 
 
 
-module.exports = {createGroup, getAllGroups, updateGroup, getAllGroupsMonitorEmpty, getAllGroupsMonitorNotEmpty};
+module.exports = {createGroup, getAllGroups, updateGroup, getAllGroupsMonitorEmpty, getAllGroupsMonitorNotEmpty, updateGroupToNull};

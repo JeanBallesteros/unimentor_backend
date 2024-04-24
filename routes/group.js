@@ -12,4 +12,6 @@ router.post("/new-group", groupController.createGroup);
 
 router.patch("/update/:id", groupController.updateGroup);
 
+router.patch("/updatetonull/:id", groupController.updateGroupToNull);
+
 module.exports = router;
