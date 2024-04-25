@@ -89,7 +89,7 @@ const avalUsers = async (req, res) => {
     const avales = await modelAval.find();
     const avalUserIds = avales.map((aval) => aval.idUsuario);
     const result = await modelUser.aggregate([
-      { $match: { role: { $ne: "master", $ne: "monitor" }, _id: { $in: avalUserIds } } },
+      { $match: { role: { $ne: "master", $ne: "teacher" }, _id: { $in: avalUserIds } } },
       {
         $lookup: {
           from: "avals",

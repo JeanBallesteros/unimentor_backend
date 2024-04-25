@@ -7,9 +7,9 @@ const groupSchema = mongoose.Schema({
         required: true
     },
     monitor: {
-        type: String, 
+        type: mongoose.Schema.Types.ObjectId,
         ref: "Users",
-        default: ""
+        default: null
     },
     teacher: {
         type: mongoose.Schema.Types.ObjectId, 
