@@ -4,7 +4,11 @@ const groupController = require("../controllers/group")
 
 router.get("/", groupController.getAllGroups);
 
+router.get("/:id", groupController.getGroup);
+
 router.get("/monitor", groupController.getAllGroupsMonitorEmpty);
+
+router.get("/monitor/:id", groupController.getAllGroupsMonitor);
 
 router.get("/monitornotempty", groupController.getAllGroupsMonitorNotEmpty);
 

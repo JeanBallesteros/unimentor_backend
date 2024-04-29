@@ -29,6 +29,61 @@ const getAllGroups = async (req, res) => {
     }
 };
 
+const getGroup = async (req, res)=>{
+    try{
+        const id = req.params.id;
+        // const group = await modelGroup.findById(id);
+
+        const group = await modelGroup.aggregate([
+            // Etapa 1: Unir con la colección de asignaturas
+            {
+                $lookup: {
+                    from: "subjects", // Nombre de la colección de asignaturas
+                    localField: "subject", // Campo local a unir (en este caso, el ID de la asignatura)
+                    foreignField: "_id", // Campo en la colección de asignaturas que se corresponde con el campo local (la referencia a la asignatura)
+                    as: "subject" // Nombre del campo donde se almacenarán los resultados de la unión
+                }
+            },
+            // Etapa 2: Unir con la colección de monitores
+            {
+                $lookup: {
+                    from: "users", // Nombre de la colección de monitores
+                    localField: "monitor", // Campo local a unir (en este caso, el ID del monitor)
+                    foreignField: "_id", // Campo en la colección de monitores que se corresponde con el campo local (la referencia al monitor)
+                    as: "monitor" // Nombre del campo donde se almacenarán los resultados de la unión
+                }
+            },
+            // Etapa 3: Unir con la colección de profesores
+            {
+                $lookup: {
+                    from: "users", // Nombre de la colección de monitores
+                    localField: "teacher", // Campo local a unir (en este caso, el ID del monitor)
+                    foreignField: "_id", // Campo en la colección de monitores que se corresponde con el campo local (la referencia al monitor)
+                    as: "teacher" // Nombre del campo donde se almacenarán los resultados de la unión
+                }
+            },
+            // Etapa 3: Filtrar por monitor no vacío
+            {
+                $match: {
+                    "_id": new mongoose.Types.ObjectId(id) // Filtrar documentos donde el campo "monitor" no es nulo
+                }
+            }
+        ]).exec();
+
+
+
+        if(!group){
+            res.status(404).json({message: 'Group not found'});
+        } else {
+            res.status(200).json(group);
+        }
+
+    }
+    catch(error){
+        res.status(500).json({message: error.message});
+    }
+};
+
 const getAllGroupsMonitorEmpty = async (req, res) => {
     try {
         // Utilizamos la agregación para realizar un "inner join" y filtrar por monitor vacío
@@ -144,8 +199,56 @@ const updateGroupToNull = async (req, res)=>{
     }
 };
 
+const getAllGroupsMonitor = async (req, res) => {
+    try {
+
+        const {id} = req.params;
+
+        // Utilizamos la agregación para realizar un "inner join" y filtrar por monitor vacío
+        const groupsWithSubjectsAndMonitor = await modelGroup.aggregate([
+            // Etapa 1: Unir con la colección de asignaturas
+            {
+                $lookup: {
+                    from: "subjects", // Nombre de la colección de asignaturas
+                    localField: "subject", // Campo local a unir (en este caso, el ID de la asignatura)
+                    foreignField: "_id", // Campo en la colección de asignaturas que se corresponde con el campo local (la referencia a la asignatura)
+                    as: "subject" // Nombre del campo donde se almacenarán los resultados de la unión
+                }
+            },
+            // Etapa 2: Unir con la colección de monitores
+            {
+                $lookup: {
+                    from: "users", // Nombre de la colección de monitores
+                    localField: "monitor", // Campo local a unir (en este caso, el ID del monitor)
+                    foreignField: "_id", // Campo en la colección de monitores que se corresponde con el campo local (la referencia al monitor)
+                    as: "monitor" // Nombre del campo donde se almacenarán los resultados de la unión
+                }
+            },
+            // Etapa 3: Unir con la colección de profesores
+            {
+                $lookup: {
+                    from: "users", // Nombre de la colección de monitores
+                    localField: "teacher", // Campo local a unir (en este caso, el ID del monitor)
+                    foreignField: "_id", // Campo en la colección de monitores que se corresponde con el campo local (la referencia al monitor)
+                    as: "teacher" // Nombre del campo donde se almacenarán los resultados de la unión
+                }
+            },
+            // Etapa 3: Filtrar por monitor no vacío
+            {
+                $match: {
+                    "monitor._id": new mongoose.Types.ObjectId(id) // Filtrar documentos donde el campo "monitor" no es nulo
+                }
+            }
+        ]).exec();
+
+        console.log(groupsWithSubjectsAndMonitor)
+
+        res.status(200).json(groupsWithSubjectsAndMonitor);
+    } catch (error) {
+        res.status(500).json({ message: error.message });
+    }
+};
 
 
 
-
-module.exports = {createGroup, getAllGroups, updateGroup, getAllGroupsMonitorEmpty, getAllGroupsMonitorNotEmpty, updateGroupToNull};
+module.exports = {createGroup, getAllGroups, getGroup, updateGroup, getAllGroupsMonitorEmpty, getAllGroupsMonitorNotEmpty, updateGroupToNull, getAllGroupsMonitor};
