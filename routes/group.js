@@ -6,11 +6,13 @@ router.get("/", groupController.getAllGroups);
 
 router.get("/:id", groupController.getGroup);
 
-router.get("/monitor", groupController.getAllGroupsMonitorEmpty);
+router.get("/monitorget/:id", groupController.getAllGroupsMonitorEmpty);
 
 router.get("/monitor/:id", groupController.getAllGroupsMonitor);
 
-router.get("/monitornotempty", groupController.getAllGroupsMonitorNotEmpty);
+router.get("/monitornotempty/:id", groupController.getAllGroupsMonitorNotEmpty);
+
+router.get("/monitorgetnotempty", groupController.getNotEmpty);
 
 router.post("/new-group", groupController.createGroup);
 
