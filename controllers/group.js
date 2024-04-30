@@ -87,7 +87,7 @@ const getGroup = async (req, res)=>{
 const getAllGroupsMonitorEmpty = async (req, res) => {
     try {
 
-        const {id} = req.params;
+        // const {id} = req.params;
         // Utilizamos la agregación para realizar un "inner join" y filtrar por monitor vacío
         const groupsWithSubjectsAndEmptyMonitor = await modelGroup.aggregate([
             // Etapa 1: Unir con la colección de asignaturas
