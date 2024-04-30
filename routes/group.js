@@ -6,7 +6,7 @@ router.get("/", groupController.getAllGroups);
 
 router.get("/:id", groupController.getGroup);
 
-router.get("/monitorget/:id", groupController.getAllGroupsMonitorEmpty);
+router.get("/monitorempty/:id", groupController.getAllGroupsMonitorEmpty);
 
 router.get("/monitor/:id", groupController.getAllGroupsMonitor);
 
