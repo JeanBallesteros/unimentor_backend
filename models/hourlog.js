@@ -26,7 +26,8 @@ const hourLogSchema = mongoose.Schema({
         required: true
     },
     date: { type: Date, required: true},
-    hours: { type: Number, required: true}
+    hours: { type: Number, required: true},
+    active: { type: String, required: true, default: "false"}
 })
 
 module.exports = mongoose.model("HourLog", hourLogSchema);
