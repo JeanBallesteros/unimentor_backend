@@ -74,6 +74,8 @@ const avalUpload = async (req, res) => {
       certificado: files[2].filename,
     });
 
+    // console.log(files);
+
     await aval.save();
 
     res
@@ -151,4 +153,18 @@ const userIdInAval = async (req, res) => {
   }
 };
 
-module.exports = { avalUpload, avalUsers, avalDelete, avalUsersMonitor, userIdInAval};
+const createAval = async (req, res)=>{
+  try{
+      const {idUsuario, promedio, rut, certificado} = req.body;
+      // console.log(req.body);
+      const newAval = new modelAval({idUsuario, promedio, rut, certificado});
+      // console.log(newAval);
+      const savedAval = await newAval.save();
+
+      res.status(201).json({ message: "Aval creado", Aval: savedAval });
+  }catch(error){
+      res.status(500).json({message: error.message});
+  }
+}
+
+module.exports = { avalUpload, avalUsers, avalDelete, avalUsersMonitor, userIdInAval, createAval};
