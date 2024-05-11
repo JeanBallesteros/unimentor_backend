@@ -147,7 +147,11 @@ const userIdInAval = async (req, res) => {
   try {
     const userId = req.params.id;
     const aval = await modelAval.findOne({ idUsuario: userId });
-    res.status(200).json({ message: "userId presente", aval });
+    if(aval){
+      res.status(200).json({ message: "userId presente", aval });
+    }else{
+      res.status(200).json({ message: "userId no presente", aval });
+    }
   }   catch (error) {
     res.status(500).json({ message: "Error al obtener el aval" });
   }
