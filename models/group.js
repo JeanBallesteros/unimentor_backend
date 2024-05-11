@@ -1,6 +1,6 @@
 const mongoose = require('mongoose')
 const groupSchema = mongoose.Schema({
-    name: { type: String, unique: true, required: true},
+    name: { type: String, required: true},
     subject: {
         type: mongoose.Schema.Types.ObjectId, 
         ref: "Subjects",
@@ -17,5 +17,7 @@ const groupSchema = mongoose.Schema({
         required: true
     },
 })
+
+groupSchema.index({ _id: 1, subject: 1 }, { unique: true });
 
 module.exports = mongoose.model("Group", groupSchema);
