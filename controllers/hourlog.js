@@ -37,42 +37,42 @@ const getAllHoursLog = async (req, res) => {
         const hoursLog = await modelHourLog.aggregate([
             {
                 $lookup: {
-                    from: "programs", // Nombre de la colección de grupos
-                    localField: "program", // Campo local a unir (en este caso, el ID de la asignatura)
-                    foreignField: "_id", // Campo en la colección de grupos que se corresponde con el campo local (la referencia a la asignatura)
-                    as: "program" // Nombre del campo donde se almacenarán los resultados de la unión
+                    from: "programs", 
+                    localField: "program", 
+                    foreignField: "_id", 
+                    as: "program" 
                 }
             },
             {
                 $lookup: {
-                    from: "subjects", // Nombre de la colección de grupos
-                    localField: "subject", // Campo local a unir (en este caso, el ID de la asignatura)
-                    foreignField: "_id", // Campo en la colección de grupos que se corresponde con el campo local (la referencia a la asignatura)
-                    as: "subject" // Nombre del campo donde se almacenarán los resultados de la unión
+                    from: "subjects", 
+                    localField: "subject", 
+                    foreignField: "_id", 
+                    as: "subject" 
                 }
             },
             {
                 $lookup: {
-                    from: "groups", // Nombre de la colección de grupos
-                    localField: "group", // Campo local a unir (en este caso, el ID de la asignatura)
-                    foreignField: "_id", // Campo en la colección de grupos que se corresponde con el campo local (la referencia a la asignatura)
-                    as: "group" // Nombre del campo donde se almacenarán los resultados de la unión
+                    from: "groups", 
+                    localField: "group", 
+                    foreignField: "_id", 
+                    as: "group" 
                 }
             },
             {
                 $lookup: {
-                    from: "users", // Nombre de la colección de grupos
-                    localField: "teacher", // Campo local a unir (en este caso, el ID de la asignatura)
-                    foreignField: "_id", // Campo en la colección de grupos que se corresponde con el campo local (la referencia a la asignatura)
-                    as: "teacher" // Nombre del campo donde se almacenarán los resultados de la unión
+                    from: "users", 
+                    localField: "teacher", 
+                    foreignField: "_id", 
+                    as: "teacher" 
                 }
             },
             {
                 $lookup: {
-                    from: "users", // Nombre de la colección de grupos
-                    localField: "monitor", // Campo local a unir (en este caso, el ID de la asignatura)
-                    foreignField: "_id", // Campo en la colección de grupos que se corresponde con el campo local (la referencia a la asignatura)
-                    as: "monitor" // Nombre del campo donde se almacenarán los resultados de la unión
+                    from: "users", 
+                    localField: "monitor", 
+                    foreignField: "_id", 
+                    as: "monitor" 
                 }
             },
             {
@@ -125,50 +125,67 @@ const getAllHoursLogByTeacherId = async (req, res) => {
     try{
 
         const {id} = req.params;
+
+        // Obtener el primer día del mes actual
+        const firstDayOfMonth = new Date();
+        firstDayOfMonth.setDate(1);
+        firstDayOfMonth.setHours(0, 0, 0, 0);
+
+        // Obtener el último día del mes actual
+        const lastDayOfMonth = new Date(firstDayOfMonth);
+        lastDayOfMonth.setMonth(lastDayOfMonth.getMonth() + 1);
+        lastDayOfMonth.setDate(0);
+        lastDayOfMonth.setHours(23, 59, 59, 999);
+
+        console.log(firstDayOfMonth)
+        console.log(lastDayOfMonth)
+
+
         const hoursLog = await modelHourLog.aggregate([
             {
                 $lookup: {
-                    from: "programs", // Nombre de la colección de grupos
-                    localField: "program", // Campo local a unir (en este caso, el ID de la asignatura)
-                    foreignField: "_id", // Campo en la colección de grupos que se corresponde con el campo local (la referencia a la asignatura)
-                    as: "program" // Nombre del campo donde se almacenarán los resultados de la unión
+                    from: "programs", 
+                    localField: "program", 
+                    foreignField: "_id", 
+                    as: "program" 
                 }
             },
             {
                 $lookup: {
-                    from: "subjects", // Nombre de la colección de grupos
-                    localField: "subject", // Campo local a unir (en este caso, el ID de la asignatura)
-                    foreignField: "_id", // Campo en la colección de grupos que se corresponde con el campo local (la referencia a la asignatura)
-                    as: "subject" // Nombre del campo donde se almacenarán los resultados de la unión
+                    from: "subjects", 
+                    localField: "subject", 
+                    foreignField: "_id", 
+                    as: "subject" 
                 }
             },
             {
                 $lookup: {
-                    from: "groups", // Nombre de la colección de grupos
-                    localField: "group", // Campo local a unir (en este caso, el ID de la asignatura)
-                    foreignField: "_id", // Campo en la colección de grupos que se corresponde con el campo local (la referencia a la asignatura)
-                    as: "group" // Nombre del campo donde se almacenarán los resultados de la unión
+                    from: "groups", 
+                    localField: "group", 
+                    foreignField: "_id", 
+                    as: "group" 
                 }
             },
             {
                 $lookup: {
-                    from: "users", // Nombre de la colección de grupos
-                    localField: "teacher", // Campo local a unir (en este caso, el ID de la asignatura)
-                    foreignField: "_id", // Campo en la colección de grupos que se corresponde con el campo local (la referencia a la asignatura)
-                    as: "teacher" // Nombre del campo donde se almacenarán los resultados de la unión
+                    from: "users", 
+                    localField: "teacher", 
+                    foreignField: "_id", 
+                    as: "teacher" 
                 }
             },
             {
                 $lookup: {
-                    from: "users", // Nombre de la colección de grupos
-                    localField: "monitor", // Campo local a unir (en este caso, el ID de la asignatura)
-                    foreignField: "_id", // Campo en la colección de grupos que se corresponde con el campo local (la referencia a la asignatura)
-                    as: "monitor" // Nombre del campo donde se almacenarán los resultados de la unión
+                    from: "users", 
+                    localField: "monitor", 
+                    foreignField: "_id", 
+                    as: "monitor" 
                 }
             },
             {
                 $match: {
-                    "teacher._id": new mongoose.Types.ObjectId(id)
+                    "teacher._id": new mongoose.Types.ObjectId(id),
+                    date: { $gte: firstDayOfMonth, $lt: lastDayOfMonth }
                 }
             }
         ]).exec();
