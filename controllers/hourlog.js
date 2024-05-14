@@ -32,6 +32,302 @@ const getHourLogById = async (req, res) => {
 
 const getAllHoursLog = async (req, res) => {
     try{
+        const hoursLog = await modelHourLog.aggregate([
+            {
+                $lookup: {
+                    from: "programs", 
+                    localField: "program", 
+                    foreignField: "_id", 
+                    as: "program" 
+                }
+            },
+            {
+                $lookup: {
+                    from: "subjects", 
+                    localField: "subject", 
+                    foreignField: "_id", 
+                    as: "subject" 
+                }
+            },
+            {
+                $lookup: {
+                    from: "groups", 
+                    localField: "group", 
+                    foreignField: "_id", 
+                    as: "group" 
+                }
+            },
+            {
+                $lookup: {
+                    from: "users", 
+                    localField: "teacher", 
+                    foreignField: "_id", 
+                    as: "teacher" 
+                }
+            },
+            {
+                $lookup: {
+                    from: "users", 
+                    localField: "monitor", 
+                    foreignField: "_id", 
+                    as: "monitor" 
+                }
+            }
+        ]).exec();
+        res.status(200).json(hoursLog);
+    }catch(error){
+        res.status(500).json({message: error.message});
+    }
+}
+
+const getAllHoursLogByMonitorDate = async (req, res) => {
+    try{
+        const {id} = req.params;
+
+
+
+        // Obtener la fecha actual
+        const currentDate = new Date();
+
+        // Determinar el mes actual
+        const currentMonth = currentDate.getMonth();
+
+        // Definir el primer día del semestre
+        let firstDayOfSemester = new Date(currentDate.getFullYear(), 0, 1); // Por defecto, el semestre comienza en enero (mes 0)
+
+        // Si el mes actual es mayor que 5 (junio), el semestre comienza en julio (mes 6)
+        if (currentMonth > 5) {
+            firstDayOfSemester = new Date(currentDate.getFullYear(), 6, 1);
+        }
+
+        // Definir el último día del semestre
+        const lastDayOfSemester = new Date(firstDayOfSemester.getFullYear(), firstDayOfSemester.getMonth() + 6, 0);
+
+        // Establecer la hora para el primer día del semestre
+        firstDayOfSemester.setHours(0, 0, 0, 0);
+
+        // Establecer la hora para el último día del semestre
+        lastDayOfSemester.setHours(23, 59, 59, 999);
+
+        console.log("Primer día del semestre:", firstDayOfSemester);
+        console.log("Último día del semestre:", lastDayOfSemester);
+
+
+
+        const hoursLog = await modelHourLog.aggregate([
+            {
+                $lookup: {
+                    from: "programs", 
+                    localField: "program", 
+                    foreignField: "_id", 
+                    as: "program" 
+                }
+            },
+            {
+                $lookup: {
+                    from: "subjects", 
+                    localField: "subject", 
+                    foreignField: "_id", 
+                    as: "subject" 
+                }
+            },
+            {
+                $lookup: {
+                    from: "groups", 
+                    localField: "group", 
+                    foreignField: "_id", 
+                    as: "group" 
+                }
+            },
+            {
+                $lookup: {
+                    from: "users", 
+                    localField: "teacher", 
+                    foreignField: "_id", 
+                    as: "teacher" 
+                }
+            },
+            {
+                $lookup: {
+                    from: "users", 
+                    localField: "monitor", 
+                    foreignField: "_id", 
+                    as: "monitor" 
+                }
+            },
+            {
+                $match: {
+                    "monitor._id": new mongoose.Types.ObjectId(id),
+                    date: { $gte: firstDayOfSemester, $lt: lastDayOfSemester },
+                    active: true
+                }
+            },
+            {
+                $project: {
+                    month: { $month: "$date" } // Proyectar solo el mes de la fecha
+                }
+            },
+            {
+                $group: {
+                    _id: "$month" // Agrupar por mes
+                }
+            }
+        ]).exec();
+
+        function getMonthName(monthNumber) {
+            const months = [
+                "Enero", "Febrero", "Marzo", "Abril", "Mayo", "Junio",
+                "Julio", "Agosto", "Septiembre", "Octubre", "Noviembre", "Diciembre"
+            ];
+            return months[monthNumber - 1]; // Los meses comienzan desde 0 en JavaScript, pero queremos empezar desde 1
+        }
+
+
+        const monthsArray = hoursLog.map(item => item._id);
+
+        // console.log("Meses:", monthsArray);
+
+        const monthNames = monthsArray.map(getMonthName);
+
+        res.status(200).json(monthNames);
+    }catch(error){
+        res.status(500).json({message: error.message});
+    }
+}
+
+//Obtener hourslog con los m
+const getAllHoursLogByMonitorAndSemester = async (req, res) => {
+    try{
+
+        const {id} = req.params;
+        const {month} = req.query;
+
+        console.log(month)
+        
+        // Array de nombres de meses
+        const monthNames = ["enero", "febrero", "marzo", "abril", "mayo", "junio", "julio", "agosto", "septiembre", "octubre", "noviembre", "diciembre"];
+
+        // Obtener el número de mes
+        const monthNumber = monthNames.findIndex(m => m.toLowerCase() === month.toLowerCase());
+
+        const hoursLog = await modelHourLog.aggregate([
+            {
+                $lookup: {
+                    from: "programs", 
+                    localField: "program", 
+                    foreignField: "_id", 
+                    as: "program" 
+                }
+            },
+            {
+                $lookup: {
+                    from: "subjects", 
+                    localField: "subject", 
+                    foreignField: "_id", 
+                    as: "subject" 
+                }
+            },
+            {
+                $lookup: {
+                    from: "groups", 
+                    localField: "group", 
+                    foreignField: "_id", 
+                    as: "group" 
+                }
+            },
+            {
+                $lookup: {
+                    from: "users", 
+                    localField: "teacher", 
+                    foreignField: "_id", 
+                    as: "teacher" 
+                }
+            },
+            {
+                $lookup: {
+                    from: "users", 
+                    localField: "monitor", 
+                    foreignField: "_id", 
+                    as: "monitor" 
+                }
+            },
+            {
+                $match: {
+                    "monitor._id": new mongoose.Types.ObjectId(id),
+                    // Filtrar por el mes especificado
+                    $expr: { $eq: [{ $month: "$date" }, monthNumber + 1] }, // Se suma 1 ya que los meses en JavaScript son base 0
+                    active: true
+                }
+            }
+        ]).exec();
+
+        const sumHours = await modelHourLog.aggregate([
+            {
+                $lookup: {
+                    from: "programs", 
+                    localField: "program", 
+                    foreignField: "_id", 
+                    as: "program" 
+                }
+            },
+            {
+                $lookup: {
+                    from: "subjects", 
+                    localField: "subject", 
+                    foreignField: "_id", 
+                    as: "subject" 
+                }
+            },
+            {
+                $lookup: {
+                    from: "groups", 
+                    localField: "group", 
+                    foreignField: "_id", 
+                    as: "group" 
+                }
+            },
+            {
+                $lookup: {
+                    from: "users", 
+                    localField: "teacher", 
+                    foreignField: "_id", 
+                    as: "teacher" 
+                }
+            },
+            {
+                $lookup: {
+                    from: "users", 
+                    localField: "monitor", 
+                    foreignField: "_id", 
+                    as: "monitor" 
+                }
+            },
+            {
+                $match: {
+                    "monitor._id": new mongoose.Types.ObjectId(id),
+                    // Filtrar por el mes especificado
+                    $expr: { $eq: [{ $month: "$date" }, monthNumber + 1] }, // Se suma 1 ya que los meses en JavaScript son base 0
+                    active: true
+                }
+            },
+            {
+                $group: {
+                    _id: null, // Agrupar todos los documentos en un solo grupo
+                    totalHours: { $sum: "$hours" } // Sumar los valores de la campo "hours"
+                }
+            }
+        ]).exec();
+
+
+        res.status(200).json({hoursLog, sum: sumHours});
+    }catch(error){
+        res.status(500).json({message: error.message});
+    }
+
+};
+
+const getAllHoursLogByMonitorId = async (req, res) => {
+    try{
 
         const {id} = req.params;
         const hoursLog = await modelHourLog.aggregate([
@@ -212,4 +508,4 @@ const updateHourLog = async (req, res)=>{
     }
 };
 
-module.exports = {createHourLog, getHourLogById, getAllDates, getAllHoursLog, hourLogDelete, getAllHoursLogByTeacherId, updateHourLog};
+module.exports = {createHourLog, getHourLogById, getAllDates, getAllHoursLogByMonitorId, getAllHoursLog, getAllHoursLogByMonitorDate, getAllHoursLogByMonitorAndSemester, hourLogDelete, getAllHoursLogByTeacherId, updateHourLog, getAllHoursLog};

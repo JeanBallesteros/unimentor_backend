@@ -12,6 +12,15 @@ const getAllUsers = async (req, res)=>{
     }
 };
 
+const getAllMonitors = async (req, res)=>{
+    try{
+        const users = await modelUser.find({role: "monitor"});
+        res.status(200).json(users);
+    }catch(error){
+        res.status(500).json({message: error.message});
+    }
+};
+
 const updateUser = async (req, res)=>{
     try{
         const {id} = req.params;
@@ -29,4 +38,4 @@ const updateUser = async (req, res)=>{
     }
 };
 
-module.exports = {getAllUsers, updateUser};
+module.exports = {getAllUsers, updateUser, getAllMonitors};

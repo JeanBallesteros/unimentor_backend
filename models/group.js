@@ -18,6 +18,6 @@ const groupSchema = mongoose.Schema({
     },
 })
 
-groupSchema.index({ _id: 1, subject: 1 }, { unique: true });
+// groupSchema.index({}, { unique: true });
 
 module.exports = mongoose.model("Group", groupSchema);
