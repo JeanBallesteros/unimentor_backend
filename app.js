@@ -10,6 +10,7 @@ const asignaturaRoutes = require("./routes/subject")
 const programaRoutes = require("./routes/program")
 const grupoRoutes = require("./routes/group")
 const hourLogRoutes = require("./routes/hourlog")
+const reportRoutes = require("./routes/report")
 
 const dotenv = require('dotenv').config()
 
@@ -44,6 +45,8 @@ app.use(`/${process.env.API_PATH}/programas`, programaRoutes);
 app.use(`/${process.env.API_PATH}/grupos`, grupoRoutes);
 
 app.use(`/${process.env.API_PATH}/hourlog`, hourLogRoutes);
+
+app.use(`/${process.env.API_PATH}/reports`, reportRoutes);
 
 
 app.use(`/${process.env.API_PATH}/uploads`, express.static('uploads'));
