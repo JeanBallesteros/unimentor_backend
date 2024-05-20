@@ -9,9 +9,7 @@ const mongoose = require("mongoose")
 const createHourLog = async (req, res)=>{
     try{
         const {program, subject, group, teacher, monitor, date, hours} = req.body;
-        // console.log(req.body);
         const newHourLog = new modelHourLog({program, subject, group, teacher, monitor, date, hours});
-        // console.log(newProgram);
         const savedHourLog = await newHourLog.save();
 
         res.status(201).json({ message: "Programa creado", hourlog: savedHourLog });
@@ -84,8 +82,6 @@ const getAllHoursLogByMonitorDate = async (req, res) => {
     try{
         const {id} = req.params;
 
-
-
         // Obtener la fecha actual
         const currentDate = new Date();
 
@@ -108,11 +104,6 @@ const getAllHoursLogByMonitorDate = async (req, res) => {
 
         // Establecer la hora para el último día del semestre
         lastDayOfSemester.setHours(23, 59, 59, 999);
-
-        console.log("Primer día del semestre:", firstDayOfSemester);
-        console.log("Último día del semestre:", lastDayOfSemester);
-
-
 
         const hoursLog = await modelHourLog.aggregate([
             {
@@ -184,8 +175,6 @@ const getAllHoursLogByMonitorDate = async (req, res) => {
 
 
         const monthsArray = hoursLog.map(item => item._id);
-
-        // console.log("Meses:", monthsArray);
 
         const monthNames = monthsArray.map(getMonthName);
 
@@ -411,7 +400,7 @@ const hourLogDelete = async (req, res) => {
         const hourLog = await modelHourLog.findById(hourLogId);
         await hourLog.deleteOne();
         res.status(200).json({ message: "Registro eliminado correctamente" });
-    }   catch (error) {
+    }catch (error) {
         res.status(500).json({ message: error.message });
     }
 };
@@ -432,10 +421,6 @@ const getAllHoursLogByTeacherId = async (req, res) => {
         lastDayOfMonth.setMonth(lastDayOfMonth.getMonth() + 1);
         lastDayOfMonth.setDate(0);
         lastDayOfMonth.setHours(23, 59, 59, 999);
-
-        console.log(firstDayOfMonth)
-        console.log(lastDayOfMonth)
-
 
         const hoursLog = await modelHourLog.aggregate([
             {

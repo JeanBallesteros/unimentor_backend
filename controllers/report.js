@@ -8,9 +8,7 @@ const fetch = require('node-fetch')
 const createReport = async (req, res)=>{
     try{
         const {hoursLog, pricePerHour, date} = req.body;
-        // console.log(req.body);
         const newReport = new modelReport({hoursLog, pricePerHour, date});
-        // console.log(newReport);
         const savedReport = await newReport.save();
 
         res.status(201).json({ message: "Reporte creado", report: savedReport });
