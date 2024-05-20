@@ -7,9 +7,7 @@ const fetch = require('node-fetch')
 const createProgram = async (req, res)=>{
     try{
         const {name, subjects} = req.body;
-        // console.log(req.body);
         const newProgram = new modelProgram({name, subjects});
-        // console.log(newProgram);
         const savedProgram = await newProgram.save();
 
         res.status(201).json({ message: "Programa creado", program: savedProgram });
@@ -20,11 +18,8 @@ const createProgram = async (req, res)=>{
 
 const findProgramBySubjectId = async (req, res) => {
     try {
-        // console.log(subjectId);
         const { subjectId } = req.params;
 
-        // console.log(subjectId)
-    
         // Buscar el programa que contiene la asignatura con el _id especificado en su array de asignaturas
         const program = await modelProgram.findOne({
             subjects: { $elemMatch: { $eq: subjectId } }

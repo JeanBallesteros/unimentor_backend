@@ -8,9 +8,7 @@ const fetch = require('node-fetch')
 const createSubject = async (req, res)=>{
     try{
         const {name} = req.body;
-        // console.log(req.body);
         const newSubject = new modelSubject({name});
-        // console.log(newSubject);
         const savedSubject = await newSubject.save();
 
         res.status(201).json({ message: "Asignatura creada", subject: savedSubject });
@@ -18,15 +16,6 @@ const createSubject = async (req, res)=>{
         res.status(500).json({message: error.message});
     }
 }
-
-// const getAllSubjects = async (req, res)=>{
-//     try{
-//         const subjects = await modelSubject.find();
-//         res.status(200).json(subjects);
-//     }catch(error){
-//         res.status(500).json({message: error.message});
-//     }
-// };
 
 const getAllSubjects = async (req, res)=>{
     try{
@@ -54,14 +43,5 @@ const updateSubject = async (req, res)=>{
         res.status(500).json({message: error.message});
     }
 };
-
-// const getAllSubjects = async (req, res)=>{
-//     try{
-//         const subjects = await modelSubject.find();
-//         res.status(200).json(subjects);
-//     }catch(error){
-//         res.status(500).json({message: error.message});
-//     }
-// };
 
 module.exports = {createSubject, getAllSubjects, updateSubject};

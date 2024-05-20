@@ -9,9 +9,7 @@ const mongoose = require("mongoose")
 const createGroup = async (req, res)=>{
     try{
         const {name, subject, teacher} = req.body;
-        // console.log(req.body);
         const newGroup = new modelGroup({name, subject, teacher});
-        // console.log(newSubject);
         const savedGroup = await newGroup.save();
 
         res.status(201).json({ message: "Grupo creado", group: savedGroup });
@@ -294,8 +292,6 @@ const getAllGroupsMonitor = async (req, res) => {
                 }
             }
         ]).exec();
-
-        console.log(groupsWithSubjectsAndMonitor)
 
         res.status(200).json(groupsWithSubjectsAndMonitor);
     } catch (error) {

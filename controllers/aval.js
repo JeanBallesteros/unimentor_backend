@@ -54,8 +54,6 @@ const avalUpload = async (req, res) => {
 
     const files = req.files;
 
-    console.log(files);
-
     if (files.length !== 3) {
       throw new Error("Debe subir exactamente 3 archivos.");
     }
@@ -74,13 +72,9 @@ const avalUpload = async (req, res) => {
       certificado: files[2].filename,
     });
 
-    // console.log(files);
-
     await aval.save();
 
-    res
-      .status(201)
-      .json({ message: "Files uploaded successfully", fileDetails });
+    res.status(201).json({ message: "Files uploaded successfully", fileDetails });
   } catch (error) {
     res.status(500).json({ message: error.message });
   }
@@ -160,9 +154,7 @@ const userIdInAval = async (req, res) => {
 const createAval = async (req, res)=>{
   try{
       const {idUsuario, promedio, rut, certificado} = req.body;
-      // console.log(req.body);
       const newAval = new modelAval({idUsuario, promedio, rut, certificado});
-      // console.log(newAval);
       const savedAval = await newAval.save();
 
       res.status(201).json({ message: "Aval creado", Aval: savedAval });
