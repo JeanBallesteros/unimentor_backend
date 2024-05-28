@@ -226,8 +226,6 @@ const getAllHoursLogByMonitorAndSemester = async (req, res) => {
     try{
         const {id} = req.params;
         const {month} = req.query;
-
-        console.log(month)
         
         // Array de nombres de meses
         const monthNames = ["enero", "febrero", "marzo", "abril", "mayo", "junio", "julio", "agosto", "septiembre", "octubre", "noviembre", "diciembre"];
@@ -567,4 +565,98 @@ const updateHourLog = async (req, res)=>{
     }
 };
 
-module.exports = {createHourLog, getHourLogById, getAllDates, getAllHoursLogByMonitorId, getAllHoursLog, getAllHoursLogByMonitorDate, getAllHoursLogByMonitorAndSemester, hourLogDelete, getAllHoursLogByTeacherId, updateHourLog, getAllHoursLog};
+
+
+
+
+
+/**
+ * Obtiene todos los registros de horas de un monitor para un mes y un semestre específicos.
+ * @param {object} req - La solicitud HTTP.
+ * @param {object} res - La respuesta HTTP.
+ * @returns {object} Los registros de horas encontrados para el monitor, el mes y el semestre especificados o un mensaje de error.
+ */
+const getAllHoursLogByMonitorInMonth = async (req, res) => {
+    try{
+        const {id} = req.params;
+        // Obtener el primer día del mes actual
+        const firstDayOfMonth = new Date();
+        firstDayOfMonth.setDate(1);
+        firstDayOfMonth.setHours(0, 0, 0, 0);
+
+        // Obtener el último día del mes actual
+        const lastDayOfMonth = new Date(firstDayOfMonth);
+        lastDayOfMonth.setMonth(lastDayOfMonth.getMonth() + 1);
+        lastDayOfMonth.setDate(0);
+        lastDayOfMonth.setHours(23, 59, 59, 999);
+
+
+        // Obtener la suma total de horas para el monitor y el mes especificados
+        const sumHours = await modelHourLog.aggregate([
+            // Realiza búsquedas en otras colecciones para obtener detalles relacionados
+            {
+                $lookup: {
+                    from: "programs", 
+                    localField: "program", 
+                    foreignField: "_id", 
+                    as: "program" 
+                }
+            },
+            {
+                $lookup: {
+                    from: "subjects", 
+                    localField: "subject", 
+                    foreignField: "_id", 
+                    as: "subject" 
+                }
+            },
+            {
+                $lookup: {
+                    from: "groups", 
+                    localField: "group", 
+                    foreignField: "_id", 
+                    as: "group" 
+                }
+            },
+            {
+                $lookup: {
+                    from: "users", 
+                    localField: "teacher", 
+                    foreignField: "_id", 
+                    as: "teacher" 
+                }
+            },
+            {
+                $lookup: {
+                    from: "users", 
+                    localField: "monitor", 
+                    foreignField: "_id", 
+                    as: "monitor" 
+                }
+            },
+            // Filtra los registros de horas por el monitor y el mes especificados
+            {
+                $match: {
+                    "monitor._id": new mongoose.Types.ObjectId(id),
+                    date: { $gte: firstDayOfMonth, $lt: lastDayOfMonth },
+                    active: false
+                }
+            },
+            // Agrupa todos los documentos en un solo grupo y suma los valores de la campo "hours"
+            {
+                $group: {
+                    _id: null, // Agrupar todos los documentos en un solo grupo
+                    totalHours: { $sum: "$hours" } // Sumar los valores de la campo "hours"
+                }
+            }
+        ]).exec();
+
+        // Devolver la suma total de horas encontrados como respuesta
+        res.status(200).json({sumHours});
+    }catch(error){
+        res.status(500).json({message: error.message});
+    }
+
+};
+
+module.exports = {createHourLog, getHourLogById, getAllDates, getAllHoursLogByMonitorId, getAllHoursLog, getAllHoursLogByMonitorDate, getAllHoursLogByMonitorAndSemester, hourLogDelete, getAllHoursLogByTeacherId, updateHourLog, getAllHoursLog, getAllHoursLogByMonitorInMonth};
