@@ -571,10 +571,10 @@ const updateHourLog = async (req, res)=>{
 
 
 /**
- * Obtiene todos los registros de horas de un monitor para un mes y un semestre específicos.
+ * Obtiene la suma de horas de un monitor en el mes actual.
  * @param {object} req - La solicitud HTTP.
  * @param {object} res - La respuesta HTTP.
- * @returns {object} Los registros de horas encontrados para el monitor, el mes y el semestre especificados o un mensaje de error.
+ * @returns {object} La suma de horas encontrados para el monitor.
  */
 const getAllHoursLogByMonitorInMonth = async (req, res) => {
     try{
