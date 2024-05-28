@@ -12,5 +12,6 @@ router.get("/monitor/:id", hourLogController.getAllHoursLogByMonitorId);
 router.get("/teacher/:id", hourLogController.getAllHoursLogByTeacherId);
 router.delete("/delete/:id", hourLogController.hourLogDelete);
 router.patch("/update/:id", hourLogController.updateHourLog);
+router.get("/monitorinmonth/:id", hourLogController.getAllHoursLogByMonitorInMonth);
 
 module.exports = router;

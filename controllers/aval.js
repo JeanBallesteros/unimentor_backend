@@ -1,15 +1,28 @@
+/**
+ * Controlador para manejar la subida de archivos de aval y la gestión de avales de usuarios.
+ * @module avalController
+ */
+
 const express = require("express");
 const modelUser = require("../models/user");
 const modelAval = require("../models/aval");
 const fetch = require("node-fetch");
 const multer = require("multer");
 
+/**
+ * Función para manejar la subida de archivos de aval.
+ * @function avalUpload
+ * @param {object} req - Objeto de solicitud de Express.
+ * @param {object} res - Objeto de respuesta de Express.
+ * @returns {object} Respuesta HTTP indicando éxito o fallo de la subida de archivos.
+ */
 const avalUpload = async (req, res) => {
   try {
     const userId = req.params.id;
     const user = await modelUser.findById(userId);
     const documentNumber = user.documentNumber;
 
+    // Configuración de multer para el almacenamiento de archivos
     const storage = multer.diskStorage({
       destination: function (req, file, cb) {
         cb(null, "uploads/");
@@ -19,6 +32,7 @@ const avalUpload = async (req, res) => {
       },
     });
 
+    // Middleware de multer para la subida de archivos
     const uploadLocalM = multer({
       storage: storage,
       fileFilter: function (req, file, cb) {
@@ -42,6 +56,7 @@ const avalUpload = async (req, res) => {
       },
     }).array("files", 3);
 
+    // Ejecutar la subida de archivos
     await new Promise((resolve, reject) => {
       uploadLocalM(req, res, (err) => {
         if (err) {
@@ -54,10 +69,12 @@ const avalUpload = async (req, res) => {
 
     const files = req.files;
 
+    // Verificar si se subieron exactamente 3 archivos
     if (files.length !== 3) {
       throw new Error("Debe subir exactamente 3 archivos.");
     }
 
+    // Detalles de los archivos subidos
     const fileDetails = files.map((file) => ({
       message: "Uploaded",
       id: file.id,
@@ -65,6 +82,7 @@ const avalUpload = async (req, res) => {
       contentType: file.contentType,
     }));
 
+    // Crear un nuevo aval en la base de datos
     const aval = new modelAval({
       idUsuario: userId,
       promedio: files[0].filename,
@@ -80,6 +98,13 @@ const avalUpload = async (req, res) => {
   }
 };
 
+/**
+ * Función para obtener información de usuarios con avales.
+ * @function avalUsers
+ * @param {object} req - Objeto de solicitud de Express.
+ * @param {object} res - Objeto de respuesta de Express.
+ * @returns {object} Respuesta HTTP con la información de usuarios y sus avales.
+ */
 const avalUsers = async (req, res) => {
   try {
     const avales = await modelAval.find();
@@ -102,7 +127,13 @@ const avalUsers = async (req, res) => {
   }
 };
 
-
+/**
+ * Función para obtener información de monitores con avales.
+ * @function avalUsersMonitor
+ * @param {object} req - Objeto de solicitud de Express.
+ * @param {object} res - Objeto de respuesta de Express.
+ * @returns {object} Respuesta HTTP con la información de monitores y sus avales.
+ */
 const avalUsersMonitor = async (req, res) => {
   try {
     const avales = await modelAval.find();
@@ -125,6 +156,13 @@ const avalUsersMonitor = async (req, res) => {
   }
 };
 
+/**
+ * Función para eliminar un aval.
+ * @function avalDelete
+ * @param {object} req - Objeto de solicitud de Express.
+ * @param {object} res - Objeto de respuesta de Express.
+ * @returns {object} Respuesta HTTP indicando éxito o fallo de la eliminación del aval.
+ */
 const avalDelete = async (req, res) => {
     try {
         const avalId = req.params.id;
@@ -136,7 +174,13 @@ const avalDelete = async (req, res) => {
     }
 };
 
-
+/**
+ * Función para verificar si un usuario tiene un aval.
+ * @function userIdInAval
+ * @param {object} req - Objeto de solicitud de Express.
+ * @param {object} res - Objeto de respuesta de Express.
+ * @returns {object} Respuesta HTTP indicando si el usuario tiene un aval asociado.
+ */
 const userIdInAval = async (req, res) => {
   try {
     const userId = req.params.id;
@@ -151,6 +195,13 @@ const userIdInAval = async (req, res) => {
   }
 };
 
+/**
+ * Función para crear un nuevo aval.
+ * @function createAval
+ * @param {object} req - Objeto de solicitud de Express.
+ * @param {object} res - Objeto de respuesta de Express.
+ * @returns {object} Respuesta HTTP indicando éxito o fallo de la creación del aval.
+ */
 const createAval = async (req, res)=>{
   try{
       const {idUsuario, promedio, rut, certificado} = req.body;
